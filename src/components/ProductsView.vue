@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="products-container d-flex flex-column">
+  <v-container fluid class="products-container d-flex flex-column" style="height: 100vh;">
     <v-app-bar
         color="white"
         elevation="2"
@@ -22,12 +22,13 @@
 
       <v-spacer></v-spacer>
 
+      <!-- Cart toggle button only visible on xs and sm -->
       <v-btn
           color="primary"
           variant="flat"
           size="large"
           rounded="xl"
-          class="d-sm-none"
+          class="d-md-none"
           @click="showCartDrawer = !showCartDrawer"
       >
         <v-icon start>mdi-cart</v-icon>
@@ -43,7 +44,7 @@
       </v-btn>
     </v-app-bar>
 
-    <v-row class="flex-grow-1 product-main-content">
+    <v-row class="flex-grow-1 product-main-content" style="overflow: hidden;">
       <v-col cols="12" md="8" class="products-grid-wrapper pa-6">
         <v-row>
           <v-col
@@ -125,212 +126,47 @@
         </v-row>
       </v-col>
 
-      <v-col cols="12" md="4" class="cart-panel d-none d-md-block">
-        <v-card class="fill-height elevation-6 rounded-xl pa-4">
-          <v-card-title class="text-h5 font-weight-bold pa-4">
-            <v-icon start>mdi-cart</v-icon>
-            Votre Panier
-          </v-card-title>
-
-          <v-divider></v-divider>
-
-          <v-card-text class="cart-items-list py-4">
-            <div v-if="cartItems.length === 0" class="text-center py-8">
-              <v-icon size="64" color="grey-lighten-1">mdi-cart-outline</v-icon>
-              <p class="text-h6 mt-4 text-medium-emphasis">Votre panier est vide</p>
-            </div>
-
-            <v-list v-else dense class="cart-list">
-              <v-list-item
-                  v-for="item in cartItems"
-                  :key="item.id"
-                  class="cart-list-item"
-              >
-                <template v-slot:prepend>
-                  <v-avatar size="60" rounded="lg">
-                    <v-img :src="item.image"></v-img>
-                  </v-avatar>
-                </template>
-
-                <v-list-item-title class="font-weight-bold text-body-1">
-                  {{ item.name }}
-                </v-list-item-title>
-
-                <v-list-item-subtitle class="text-body-2">
-                  {{ parseFloat(item.price.replace('€', '')).toFixed(2) }}€ / unité
-                </v-list-item-subtitle>
-
-                <template v-slot:append>
-                  <div class="d-flex align-center">
-                    <v-btn
-                        icon
-                        size="small"
-                        variant="text"
-                        @click="updateQuantity(item.id, item.quantity - 1)"
-                    >
-                      <v-icon>mdi-minus</v-icon>
-                    </v-btn>
-
-                    <span class="mx-2 font-weight-bold text-h6">{{ item.quantity }}</span>
-
-                    <v-btn
-                        icon
-                        size="small"
-                        variant="text"
-                        @click="updateQuantity(item.id, item.quantity + 1)"
-                    >
-                      <v-icon>mdi-plus</v-icon>
-                    </v-btn>
-                  </div>
-                </template>
-              </v-list-item>
-            </v-list>
-          </v-card-text>
-
-          <v-divider v-if="cartItems.length > 0"></v-divider>
-
-          <v-card-text v-if="cartItems.length > 0" class="py-4">
-            <div class="d-flex justify-space-between align-center mb-4">
-              <span class="text-h6 font-weight-bold">Total:</span>
-              <span class="text-h5 font-weight-black text-primary">
-                {{ cartTotal.toFixed(2) }}€
-              </span>
-            </div>
-
-            <v-btn
-                color="success"
-                variant="elevated"
-                block
-                size="x-large"
-                rounded="xl"
-                @click="checkout"
-                class="checkout-btn"
-            >
-              <v-icon start>mdi-credit-card</v-icon>
-              Payer {{ cartTotal.toFixed(2) }}€
-            </v-btn>
-          </v-card-text>
-        </v-card>
+      <!-- Cart sidebar visible md+ -->
+      <v-col
+          cols="12"
+          md="4"
+          class="cart-panel d-none d-md-flex flex-column"
+          style="max-height: calc(100vh - 64px);"
+      >
+        <CartContent
+            :cart-items="cartItems"
+            :cart-total="cartTotal"
+            @update-quantity="updateQuantity"
+            @checkout="checkout"
+        />
       </v-col>
     </v-row>
 
+    <!-- Cart drawer for small screens -->
     <v-navigation-drawer
         v-model="showCartDrawer"
         location="right"
         temporary
         width="400"
-        class="pa-4"
+        class="pa-4 d-md-none"
+        :scrim="true"
+        @click:outside="showCartDrawer = false"
     >
-      <v-list-item>
-        <v-list-item-title class="text-h5 font-weight-bold">
-          <v-icon start>mdi-cart</v-icon> Votre Panier
-        </v-list-item-title>
-        <template v-slot:append>
-          <v-btn
-              icon
-              variant="text"
-              @click="showCartDrawer = false"
-              color="grey-darken-1"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </template>
-      </v-list-item>
-      <v-divider></v-divider>
-
-      <v-card-text class="cart-items-list py-4">
-        <div v-if="cartItems.length === 0" class="text-center py-8">
-          <v-icon size="64" color="grey-lighten-1">mdi-cart-outline</v-icon>
-          <p class="text-h6 mt-4 text-medium-emphasis">Votre panier est vide</p>
-        </div>
-
-        <v-list v-else dense class="cart-list">
-          <v-list-item
-              v-for="item in cartItems"
-              :key="item.id"
-              class="cart-list-item"
-          >
-            <template v-slot:prepend>
-              <v-avatar size="60" rounded="lg">
-                <v-img :src="item.image"></v-img>
-              </v-avatar>
-            </template>
-
-            <v-list-item-title class="font-weight-bold text-body-1">
-              {{ item.name }}
-            </v-list-item-title>
-
-            <v-list-item-subtitle class="text-body-2">
-              {{ parseFloat(item.price.replace('€', '')).toFixed(2) }}€ / unité
-            </v-list-item-subtitle>
-
-            <template v-slot:append>
-              <div class="d-flex align-center">
-                <v-btn
-                    icon
-                    size="small"
-                    variant="text"
-                    @click="updateQuantity(item.id, item.quantity - 1)"
-                >
-                  <v-icon>mdi-minus</v-icon>
-                </v-btn>
-
-                <span class="mx-2 font-weight-bold text-h6">{{ item.quantity }}</span>
-
-                <v-btn
-                    icon
-                    size="small"
-                    variant="text"
-                    @click="updateQuantity(item.id, item.quantity + 1)"
-                >
-                  <v-icon>mdi-plus</v-icon>
-                </v-btn>
-              </div>
-            </template>
-          </v-list-item>
-        </v-list>
-      </v-card-text>
-
-      <v-divider v-if="cartItems.length > 0"></v-divider>
-
-      <v-card-text v-if="cartItems.length > 0" class="py-4">
-        <div class="d-flex justify-space-between align-center mb-4">
-          <span class="text-h6 font-weight-bold">Total:</span>
-          <span class="text-h5 font-weight-black text-primary">
-            {{ cartTotal.toFixed(2) }}€
-          </span>
-        </div>
-
-        <v-btn
-            color="success"
-            variant="elevated"
-            block
-            size="x-large"
-            rounded="xl"
-            @click="checkout"
-            class="checkout-btn"
-        >
-          <v-icon start>mdi-credit-card</v-icon>
-          Payer {{ cartTotal.toFixed(2) }}€
-        </v-btn>
-      </v-card-text>
+      <CartContent
+          :cart-items="cartItems"
+          :cart-total="cartTotal"
+          @update-quantity="updateQuantity"
+          @checkout="checkout"
+      />
     </v-navigation-drawer>
 
-
-    <v-snackbar
-        v-model="showSuccess"
-        color="success"
-        timeout="2000"
-        location="top"
-        class="snackbar-custom"
-    >
-      <v-icon start>mdi-check-circle</v-icon>
-      Produit ajouté au panier !
-    </v-snackbar>
+    <!-- Snackbar and other elements -->
   </v-container>
 </template>
 
 <script setup>
+// Import your reusable cart content component or define it below
+import CartContent from './CartContent.vue'
 import { ref, computed } from 'vue'
 
 const showCartDrawer = ref(false) // Changed from showCart to showCartDrawer for side panel
@@ -466,67 +302,3 @@ const checkout = () => {
   showCartDrawer.value = false
 }
 </script>
-
-<style scoped>
-.products-container {
-  background: #f5f7fa; /* Light background */
-}
-
-.app-header {
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.product-main-content {
-  flex-grow: 1; /* Allows content to take available height */
-  overflow-y: auto; /* Enable scrolling for product list if it overflows */
-}
-
-.products-grid-wrapper {
-  max-width: 100%; /* Take full width on small screens */
-}
-
-.product-card {
-  transition: all 0.3s ease;
-  border: 1px solid #e0e0e0;
-}
-
-.product-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.12) !important;
-}
-
-.product-image {
-  background-color: #f0f0f0; /* Placeholder background */
-}
-
-.cart-panel {
-  background-color: #ffffff;
-  border-left: 1px solid #e0e0e0;
-  max-height: calc(100vh - 64px); /* Account for app bar height */
-  overflow-y: auto; /* Scroll for cart content */
-}
-
-.cart-items-list {
-  flex-grow: 1;
-  overflow-y: auto;
-}
-
-.cart-list-item {
-  border-bottom: 1px solid #eee;
-  padding: 8px 0;
-}
-
-.cart-list-item:last-child {
-  border-bottom: none;
-}
-
-.checkout-btn {
-  font-weight: bold;
-}
-
-.snackbar-custom .v-snackbar__content {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-</style>

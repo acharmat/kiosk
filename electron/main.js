@@ -1,14 +1,14 @@
 const { app, BrowserWindow, globalShortcut } = require('electron')
 const path = require('path')
 
-const isDev = false
+const isDev = true
 
 let mainWindow
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1920,
-    height: 1080,
+    width: 800,
+    height: 1200,
     fullscreen: !isDev,
     kiosk: !isDev,
     autoHideMenuBar: true,
@@ -22,9 +22,7 @@ function createWindow() {
     }
   })
 
-  const startUrl = isDev
-      ? 'http://localhost:8080'
-      : `file://${path.join(__dirname, '../dist/index.html')}`
+  const startUrl = `file://${path.join(__dirname, '../dist/index.html')}`
 
   mainWindow.loadURL(startUrl)
 
