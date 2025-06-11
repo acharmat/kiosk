@@ -1,14 +1,14 @@
 const { app, BrowserWindow, globalShortcut } = require('electron')
 const path = require('path')
 
-const isDev = true
+const isDev = false
 
 let mainWindow
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 1200,
+    width: 1080,
+    height: 1920,
     fullscreen: !isDev,
     kiosk: !isDev,
     autoHideMenuBar: true,
