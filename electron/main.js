@@ -1,7 +1,7 @@
 const { app, BrowserWindow, globalShortcut } = require('electron')
 const path = require('path')
 
-const isDev = false
+const isDev = true
 
 let mainWindow
 
@@ -28,9 +28,6 @@ function createWindow() {
 
   mainWindow.once('ready-to-show', () => {
     mainWindow.show()
-    if (isDev) {
-      mainWindow.webContents.openDevTools()
-    }
   })
 
   mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
