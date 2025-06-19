@@ -4,7 +4,7 @@ const axios = require('axios');
 const db = require('./db');
 const provision = require('./provision');
 
-const isDev = true;
+const isDev = false;
 
 let mainWindow;
 
