@@ -3,7 +3,6 @@ const path = require('path');
 const Database = require('better-sqlite3');
 
 const dbPath = path.join(__dirname, '../data', 'kiosk.sqlite');
-
 const db = new Database(dbPath);
 
 // Create tables if not exist
@@ -97,12 +96,16 @@ function getLocalProducts(categoryId) {
 }
 
 function saveProducts(products, categoryId) {
+    console.log('🔍 DEBUG: saveProducts called with', products.length, 'products for category', categoryId);
+
     try {
         // Check if products is an array and has the expected structure
         if (!Array.isArray(products) || products.length === 0) {
             console.log('⚠️ DEBUG: No products to save');
             return;
         }
+
+        console.log('🔍 DEBUG: Sample product structure:', JSON.stringify(products[0], null, 2));
 
         // Map the API response to your database structure
         const mappedProducts = products.map(product => ({
@@ -116,13 +119,25 @@ function saveProducts(products, categoryId) {
             updated_at: new Date().toISOString()
         }));
 
+        console.log('🔍 DEBUG: Sample mapped product:', JSON.stringify(mappedProducts[0], null, 2));
+
+        // Test the insert statement
+        console.log('🔍 DEBUG: Testing insert statement...');
+        const insertStmt = db.prepare(`
+            INSERT OR REPLACE INTO products (id, name, price, description, image, category_id, available, updated_at)
+            VALUES (@id, @name, @price, @description, @image, @category_id, @available, @updated_at)
+        `);
+
         const transaction = db.transaction((prods) => {
             for (const prod of prods) {
+                console.log('🔍 DEBUG: Inserting product:', prod.name, 'with category_id:', prod.category_id);
                 insertStmt.run(prod);
             }
         });
 
         transaction(mappedProducts);
+        console.log('✅ DEBUG: Successfully saved', mappedProducts.length, 'products');
+
     } catch (error) {
         console.error('❌ ERROR in saveProducts:', error.message);
         console.error('❌ ERROR stack:', error.stack);

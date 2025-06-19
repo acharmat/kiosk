@@ -3,8 +3,8 @@
     <div class="screensaver-overlay"></div> <v-row justify="center" align="center" class="fill-height">
     <v-col cols="12" class="text-center">
       <v-img
-          src="/path/to/your/oishi-hut-logo.png"
-          alt="Oishi Hut Logo"
+          src="https://blup.com/assets/dashboard/media/logos/default-dark.svg"
+          alt="Blup Logo"
           max-width="300"
           class="mx-auto mb-8 animate-fade-in"
       ></v-img>
@@ -29,7 +29,6 @@ const goToCategories = () => {
 }
 
 </script>
-
 <style scoped>
 .screensaver-container {
   height: 100vh;
@@ -37,7 +36,7 @@ const goToCategories = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%); /* Greenish, similar to food */
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.9) 0%, #2196F3E5 100%);
   background-size: cover;
   position: relative;
   overflow: hidden;
