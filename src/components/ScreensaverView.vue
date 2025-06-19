@@ -28,8 +28,6 @@ const goToCategories = () => {
   router.push('/categories')
 }
 
-// In a real app, you'd handle looping video or image slideshow here.
-// For demonstration, we'll keep it simple.
 </script>
 
 <style scoped>
