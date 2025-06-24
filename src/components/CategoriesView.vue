@@ -8,6 +8,11 @@
         <v-icon start size="small">mdi-octagon</v-icon>
         Catégories
       </v-toolbar-title>
+
+      <v-spacer></v-spacer>
+
+      <!-- Cart Button -->
+      <CartButton />
     </v-app-bar>
 
     <v-container class="categories-grid-wrapper pa-6">
@@ -63,16 +68,18 @@
         </v-col>
       </v-row>
     </v-container>
+
+    <!-- Cart Component -->
+    <CartComponent />
   </v-container>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { syncCategoriesIfOnline } from '@/services/categories'
 
 const router = useRouter()
-
-import { syncCategoriesIfOnline } from '@/services/categories'
 
 const categories = ref([])
 const loading = ref(true)

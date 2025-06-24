@@ -10,6 +10,10 @@ import * as directives from 'vuetify/directives'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
 import '@mdi/font/css/materialdesignicons.css'
 
+// Cart Components
+import CartComponent from './components/CartComponent.vue'
+import CartButton from './components/CartButton.vue'
+
 // Vuetify theme configuration
 const vuetify = createVuetify({
     components,
@@ -145,6 +149,33 @@ const globalStyles = `
   .slide-leave-to {
     transform: translateX(-100%);
   }
+
+  /* Cart-specific animations */
+  .cart-item-enter-active {
+    transition: all 0.3s ease;
+  }
+  
+  .cart-item-leave-active {
+    transition: all 0.3s ease;
+  }
+  
+  .cart-item-enter-from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  
+  .cart-item-leave-to {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  
+  /* Global cart badge styling */
+  .v-badge__badge {
+    font-size: 12px;
+    font-weight: 700;
+    min-width: 20px;
+    height: 20px;
+  }
 `
 
 // Inject global styles
@@ -153,6 +184,10 @@ styleSheet.textContent = globalStyles
 document.head.appendChild(styleSheet)
 
 const app = createApp(App)
+
+// Register cart components globally
+app.component('CartComponent', CartComponent)
+app.component('CartButton', CartButton)
 
 // Global properties for kiosk functionality
 app.config.globalProperties.$isKiosk = true
@@ -168,6 +203,17 @@ app.config.errorHandler = (error, instance, info) => {
     console.error('Kiosk App Error:', error)
     console.error('Component:', instance)
     console.error('Info:', info)
+
+    // Clear cart on critical errors to prevent corrupted state
+    if (error.message && error.message.includes('cart')) {
+        console.log('Cart-related error detected, clearing cart for safety')
+        try {
+            const { cartService } = require('./services/cart')
+            cartService.clear()
+        } catch (cartError) {
+            console.error('Failed to clear cart:', cartError)
+        }
+    }
 }
 
 app.use(router)
