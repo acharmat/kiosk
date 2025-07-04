@@ -1,0 +1,540 @@
+/* Global CSS Variables */
+:root {
+    /* Kiosk-specific measurements */
+    --kiosk-touch-target-min: 44px;
+    --kiosk-font-size-base: 16px;
+    --kiosk-font-size-large: 18px;
+    --kiosk-font-size-xlarge: 20px;
+    --kiosk-border-radius: 8px;
+    --kiosk-border-radius-large: 16px;
+
+    /* Animation timing */
+    --kiosk-transition-fast: 0.2s;
+    --kiosk-transition-normal: 0.3s;
+    --kiosk-transition-slow: 0.5s;
+
+    /* Z-index layers */
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-modal-backdrop: 1040;
+    --z-modal: 1050;
+    --z-popover: 1060;
+    --z-tooltip: 1070;
+    --z-toast: 1080;
+}
+
+/* Global Resets and Base Styles */
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: var(--kiosk-font-size-base);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.5;
+    color: #212121;
+    background-color: #fafafa;
+    overflow-x: hidden;
+}
+
+/* Prevent text selection on touch devices for better UX */
+.no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Kiosk-specific touch optimizations */
+.touch-optimized {
+    min-height: var(--kiosk-touch-target-min);
+    min-width: var(--kiosk-touch-target-min);
+    cursor: pointer;
+}
+
+/* Focus styles for accessibility */
+.focus-visible {
+    outline: 2px solid #1976d2;
+    outline-offset: 2px;
+}
+
+/* Remove default button styles */
+button {
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+}
+
+/* Remove default list styles */
+ul, ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* Image optimizations */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Utility Classes */
+
+/* Spacing utilities */
+.p-0 { padding: 0 !important; }
+.p-1 { padding: 0.25rem !important; }
+.p-2 { padding: 0.5rem !important; }
+.p-3 { padding: 0.75rem !important; }
+.p-4 { padding: 1rem !important; }
+.p-5 { padding: 1.25rem !important; }
+.p-6 { padding: 1.5rem !important; }
+.p-8 { padding: 2rem !important; }
+
+.m-0 { margin: 0 !important; }
+.m-1 { margin: 0.25rem !important; }
+.m-2 { margin: 0.5rem !important; }
+.m-3 { margin: 0.75rem !important; }
+.m-4 { margin: 1rem !important; }
+.m-5 { margin: 1.25rem !important; }
+.m-6 { margin: 1.5rem !important; }
+.m-8 { margin: 2rem !important; }
+
+/* Text utilities */
+.text-center { text-align: center !important; }
+.text-left { text-align: left !important; }
+.text-right { text-align: right !important; }
+
+.font-weight-light { font-weight: 300 !important; }
+.font-weight-normal { font-weight: 400 !important; }
+.font-weight-medium { font-weight: 500 !important; }
+.font-weight-bold { font-weight: 700 !important; }
+
+.text-uppercase { text-transform: uppercase !important; }
+.text-lowercase { text-transform: lowercase !important; }
+.text-capitalize { text-transform: capitalize !important; }
+
+/* Display utilities */
+.d-none { display: none !important; }
+.d-block { display: block !important; }
+.d-inline { display: inline !important; }
+.d-inline-block { display: inline-block !important; }
+.d-flex { display: flex !important; }
+.d-inline-flex { display: inline-flex !important; }
+
+/* Flex utilities */
+.flex-row { flex-direction: row !important; }
+.flex-column { flex-direction: column !important; }
+.flex-wrap { flex-wrap: wrap !important; }
+.flex-nowrap { flex-wrap: nowrap !important; }
+.justify-start { justify-content: flex-start !important; }
+.justify-center { justify-content: center !important; }
+.justify-end { justify-content: flex-end !important; }
+.justify-between { justify-content: space-between !important; }
+.justify-around { justify-content: space-around !important; }
+.align-start { align-items: flex-start !important; }
+.align-center { align-items: center !important; }
+.align-end { align-items: flex-end !important; }
+.align-stretch { align-items: stretch !important; }
+
+/* Border utilities */
+.border { border: 1px solid #e0e0e0 !important; }
+.border-0 { border: 0 !important; }
+.border-top { border-top: 1px solid #e0e0e0 !important; }
+.border-right { border-right: 1px solid #e0e0e0 !important; }
+.border-bottom { border-bottom: 1px solid #e0e0e0 !important; }
+.border-left { border-left: 1px solid #e0e0e0 !important; }
+
+.rounded { border-radius: var(--kiosk-border-radius) !important; }
+.rounded-lg { border-radius: var(--kiosk-border-radius-large) !important; }
+.rounded-circle { border-radius: 50% !important; }
+.rounded-0 { border-radius: 0 !important; }
+
+/* Shadow utilities */
+.shadow-sm { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !important; }
+.shadow { box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important; }
+.shadow-lg { box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23) !important; }
+.shadow-none { box-shadow: none !important; }
+
+/* Position utilities */
+.position-static { position: static !important; }
+.position-relative { position: relative !important; }
+.position-absolute { position: absolute !important; }
+.position-fixed { position: fixed !important; }
+.position-sticky { position: sticky !important; }
+
+/* Width and height utilities */
+.w-25 { width: 25% !important; }
+.w-50 { width: 50% !important; }
+.w-75 { width: 75% !important; }
+.w-100 { width: 100% !important; }
+.w-auto { width: auto !important; }
+
+.h-25 { height: 25% !important; }
+.h-50 { height: 50% !important; }
+.h-75 { height: 75% !important; }
+.h-100 { height: 100% !important; }
+.h-auto { height: auto !important; }
+
+/* Visibility utilities */
+.visible { visibility: visible !important; }
+.invisible { visibility: hidden !important; }
+
+/* Overflow utilities */
+.overflow-auto { overflow: auto !important; }
+.overflow-hidden { overflow: hidden !important; }
+.overflow-visible { overflow: visible !important; }
+.overflow-scroll { overflow: scroll !important; }
+
+/* Kiosk-Specific Styles */
+
+/* Touch-friendly interactive elements */
+.kiosk-touch-target {
+    min-height: var(--kiosk-touch-target-min);
+    min-width: var(--kiosk-touch-target-min);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--kiosk-transition-fast) ease;
+}
+
+.kiosk-touch-target:hover {
+    transform: translateY(-2px);
+}
+
+.kiosk-touch-target:active {
+    transform: translateY(0);
+}
+
+/* Kiosk button styles */
+.kiosk-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--kiosk-touch-target-min);
+    padding: 0.75rem 1.5rem;
+    font-size: var(--kiosk-font-size-large);
+    font-weight: 500;
+    text-decoration: none;
+    border: none;
+    border-radius: var(--kiosk-border-radius);
+    cursor: pointer;
+    transition: all var(--kiosk-transition-normal) ease;
+    user-select: none;
+}
+
+.kiosk-btn:focus {
+    outline: 2px solid #1976d2;
+    outline-offset: 2px;
+}
+
+.kiosk-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Kiosk card styles */
+.kiosk-card {
+    background: white;
+    border-radius: var(--kiosk-border-radius-large);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all var(--kiosk-transition-normal) ease;
+    overflow: hidden;
+}
+
+.kiosk-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.kiosk-card.selectable {
+    cursor: pointer;
+}
+
+.kiosk-card.selected {
+    border: 2px solid #1976d2;
+    box-shadow: 0 4px 16px rgba(25, 118, 210, 0.3);
+}
+
+/* Loading animations */
+.kiosk-loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.kiosk-loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+    transform: translateX(-100%);
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Error states */
+.kiosk-error {
+    border: 1px solid #f44336;
+    background-color: rgba(244, 67, 54, 0.1);
+}
+
+.kiosk-error-text {
+    color: #f44336;
+    font-size: 0.875rem;
+}
+
+/* Success states */
+.kiosk-success {
+    border: 1px solid #4caf50;
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+.kiosk-success-text {
+    color: #4caf50;
+    font-size: 0.875rem;
+}
+
+/* Warning states */
+.kiosk-warning {
+    border: 1px solid #ff9800;
+    background-color: rgba(255, 152, 0, 0.1);
+}
+
+.kiosk-warning-text {
+    color: #ff9800;
+    font-size: 0.875rem;
+}
+
+/* Responsive Kiosk Styles */
+
+/* Small screens (7 inch tablets) */
+@media (max-width: 768px) {
+    :root {
+        --kiosk-font-size-base: 14px;
+        --kiosk-font-size-large: 16px;
+        --kiosk-font-size-xlarge: 18px;
+    }
+
+    .kiosk-btn {
+        font-size: var(--kiosk-font-size-base);
+        padding: 0.5rem 1rem;
+    }
+}
+
+/* Large screens (10+ inch tablets) */
+@media (min-width: 1024px) {
+    :root {
+        --kiosk-font-size-base: 18px;
+        --kiosk-font-size-large: 20px;
+        --kiosk-font-size-xlarge: 24px;
+    }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .kiosk-card {
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .kiosk-card:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .kiosk-touch-target {
+        min-height: 48px;
+        min-width: 48px;
+    }
+
+    .kiosk-btn {
+        min-height: 48px;
+    }
+
+    .kiosk-card:hover {
+        transform: none;
+    }
+
+    .kiosk-card:active {
+        transform: scale(0.98);
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .kiosk-card {
+        border: 2px solid #000;
+    }
+
+    .kiosk-btn {
+        border: 2px solid #000;
+    }
+
+    .kiosk-error {
+        border: 2px solid #f44336;
+    }
+
+    .kiosk-success {
+        border: 2px solid #4caf50;
+    }
+
+    .kiosk-warning {
+        border: 2px solid #ff9800;
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .kiosk-loading::after {
+        animation: none;
+    }
+
+    .kiosk-card:hover {
+        transform: none;
+    }
+
+    .kiosk-touch-target:hover {
+        transform: none;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    body {
+        color: #ffffff;
+        background-color: #121212;
+    }
+
+    .kiosk-card {
+        background: #1e1e1e;
+        border: 1px solid #333;
+    }
+
+    .border {
+        border-color: #333 !important;
+    }
+
+    .text-muted {
+        color: #aaa !important;
+    }
+}
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    .kiosk-card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+
+    * {
+        color: #000 !important;
+        background: #fff !important;
+    }
+}
+
+/* Scrollbar styling for webkit browsers */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Firefox scrollbar styling */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #c1c1c1 #f1f1f1;
+}
+
+/* Focus management for screen readers */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.sr-only-focusable:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: inherit;
+    margin: inherit;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+}
+
+/* Skip link for accessibility */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: #000;
+    color: #fff;
+    padding: 8px;
+    text-decoration: none;
+    z-index: 9999;
+}
+
+.skip-link:focus {
+    top: 6px;
+}

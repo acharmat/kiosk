@@ -1,11 +1,551 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
-    <title>Kiosk App</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta name="description" content="Kiosk Terminal - Self-service shopping terminal application" />
+    <meta name="keywords" content="kiosk, terminal, self-service, shopping, retail" />
+    <meta name="author" content="Kiosk Terminal Team" />
+    <meta name="robots" content="noindex, nofollow" />
+
+    <!-- Theme and PWA Meta Tags -->
+    <meta name="theme-color" content="#1976D2" />
+    <meta name="msapplication-TileColor" content="#1976D2" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Kiosk Terminal" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
+    font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
+    img-src 'self' data: blob: https:;
+    connect-src 'self' https: wss: http://localhost:* http://blup.test;
+    media-src 'self' blob:;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    frame-ancestors 'none';
+    upgrade-insecure-requests;
+  " />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+
+    <!-- Favicon and Icons -->
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
+    <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#1976D2" />
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Preconnect to External Resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+
+    <!-- Fonts -->
+    <link
+            href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+            rel="stylesheet"
+    />
+
+    <!-- Material Design Icons -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.2.96/css/materialdesignicons.min.css"
+            rel="stylesheet"
+    />
+
+    <!-- Page Title -->
+    <title>Kiosk Terminal</title>
+
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="/images/default-product.png" as="image" />
+    <link rel="preload" href="/images/default-category.png" as="image" />
+    <link rel="preload" href="/images/default-channel.png" as="image" />
+
+    <!-- DNS Prefetch for Likely Domains -->
+    <link rel="dns-prefetch" href="//api.example.com" />
+    <link rel="dns-prefetch" href="//blup.test" />
+
+    <!-- Critical CSS (inline small critical styles) -->
+    <style>
+        /* Critical above-the-fold styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            overflow: hidden;
+        }
+
+        #app {
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Loading screen */
+        .app-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            z-index: 9999;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .loading-subtext {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        /* Hide loading when app is ready */
+        .app-ready .app-loading {
+            display: none;
+        }
+
+        /* Error fallback styles */
+        .app-error {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #f44336;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            z-index: 9999;
+        }
+
+        .error-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .error-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .error-message {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+        }
+
+        .retry-button {
+            background: white;
+            color: #f44336;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .retry-button:hover {
+            background: #f5f5f5;
+        }
+
+        /* Main content initially hidden */
+        #main-content {
+            display: none;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Development mode indicator */
+        .dev-mode-indicator {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #ff9800;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 10001;
+            font-family: monospace;
+        }
+
+        /* Accessibility improvements */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: #000;
+            color: #fff;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 10000;
+        }
+
+        .skip-link:focus {
+            top: 6px;
+        }
+    </style>
+</head>
+
+<body>
+<!-- Skip Link for Accessibility -->
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- Development Mode Indicator -->
+<div class="dev-mode-indicator" id="dev-indicator" style="display: none;">
+    DEV MODE - F12 Enabled
+</div>
+
+<!-- Application Root -->
+<div id="app">
+    <!-- Loading Screen -->
+    <div class="app-loading" id="app-loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Kiosk Terminal</div>
+        <div class="loading-subtext">Loading application...</div>
+    </div>
+
+    <!-- Error Fallback (hidden by default) -->
+    <div class="app-error" id="app-error" style="display: none;">
+        <div class="error-icon">⚠️</div>
+        <h1 class="error-title">Application Error</h1>
+        <p class="error-message">
+            The kiosk terminal application failed to load. This could be due to a network issue or technical problem.
+        </p>
+        <button class="retry-button" onclick="window.location.reload()">
+            Retry
+        </button>
+    </div>
+</div>
+
+<!-- Main Content Landmark -->
+<main id="main-content">
+    <!-- Vue app will mount here -->
+</main>
+
+<!-- Critical JavaScript -->
+<script>
+    // Check if we're in development mode
+    const isDev = window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1' ||
+        window.location.port === '5173';
+
+    // Show dev indicator if in development
+    if (isDev) {
+        const devIndicator = document.getElementById('dev-indicator');
+        if (devIndicator) {
+            devIndicator.style.display = 'block';
+        }
+        console.log('🚀 Running in DEVELOPMENT mode - Developer tools enabled');
+    }
+
+    // Global error handling
+    window.addEventListener('error', function(event) {
+        console.error('Global error:', event.error);
+        if (!isDev) {
+            showErrorScreen();
+        }
+    });
+
+    window.addEventListener('unhandledrejection', function(event) {
+        console.error('Unhandled promise rejection:', event.reason);
+        if (!isDev) {
+            showErrorScreen();
+        }
+    });
+
+    function showErrorScreen() {
+        const loading = document.getElementById('app-loading');
+        const error = document.getElementById('app-error');
+
+        if (loading) loading.style.display = 'none';
+        if (error) error.style.display = 'flex';
+    }
+
+    function hideLoadingScreen() {
+        const loading = document.getElementById('app-loading');
+        const mainContent = document.getElementById('main-content');
+
+        if (loading) loading.style.display = 'none';
+        if (mainContent) mainContent.style.display = 'block';
+
+        document.body.classList.add('app-ready');
+    }
+
+    // Performance monitoring
+    window.addEventListener('load', function() {
+        setTimeout(function() {
+            const perfData = performance.getEntriesByType('navigation')[0];
+            if (perfData) {
+                const loadTime = perfData.loadEventEnd - perfData.fetchStart;
+                console.log('Page load time:', loadTime + 'ms');
+
+                if (window.gtag) {
+                    gtag('event', 'timing_complete', {
+                        name: 'page_load',
+                        value: Math.round(loadTime)
+                    });
+                }
+            }
+        }, 0);
+    });
+
+    // Kiosk mode restrictions (ONLY in production)
+    if (!isDev) {
+        // Prevent context menu and text selection for kiosk mode
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+        });
+
+        // Prevent drag and drop
+        document.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+        });
+
+        // Disable F12, Ctrl+Shift+I, etc. for kiosk mode
+        document.addEventListener('keydown', function(e) {
+            // F12
+            if (e.keyCode === 123) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Ctrl+Shift+I
+            if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Ctrl+Shift+C
+            if (e.ctrlKey && e.shiftKey && e.keyCode === 67) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Ctrl+U
+            if (e.ctrlKey && e.keyCode === 85) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Touch handling for better responsiveness
+        let touchStartTime = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            touchStartTime = Date.now();
+        }, { passive: true });
+
+        document.addEventListener('touchend', function(e) {
+            const touchDuration = Date.now() - touchStartTime;
+
+            // Prevent accidental double-taps
+            if (touchDuration < 100) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+    } else {
+        console.log('🔧 Kiosk mode restrictions disabled in development');
+    }
+
+    // Service Worker registration (only in production)
+    if ('serviceWorker' in navigator && !isDev) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('/sw.js')
+                .then(function(registration) {
+                    console.log('SW registered: ', registration);
+
+                    registration.addEventListener('updatefound', function() {
+                        const newWorker = registration.installing;
+                        if (newWorker) {
+                            newWorker.addEventListener('statechange', function() {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    console.log('New content available, please refresh.');
+                                }
+                            });
+                        }
+                    });
+                })
+                .catch(function(registrationError) {
+                    console.log('SW registration failed: ', registrationError);
+                });
+        });
+    }
+
+    // Mock electronAPI for development mode
+    if (isDev && !window.electronAPI) {
+        console.log('🔧 Creating mock electronAPI for development');
+
+        window.electronAPI = {
+            getDeviceInfo: () => Promise.resolve({
+                serialNumber: 'DEV-' + Date.now(),
+                macAddress: '00:00:00:00:00:00',
+                uuid: 'dev-uuid-' + Math.random().toString(36).substr(2, 9)
+            }),
+            getAppConfig: (key) => {
+                const stored = localStorage.getItem(`kiosk-config-${key}`);
+                return Promise.resolve(stored ? JSON.parse(stored) : null);
+            },
+            setAppConfig: (key, value) => {
+                localStorage.setItem(`kiosk-config-${key}`, JSON.stringify(value));
+                return Promise.resolve(true);
+            },
+            dbQuery: (sql, params) => {
+                console.log('Mock DB Query:', sql, params);
+                return Promise.resolve([]);
+            },
+            dbRun: (sql, params) => {
+                console.log('Mock DB Run:', sql, params);
+                return Promise.resolve({ changes: 1 });
+            },
+            addToSyncQueue: (type, data) => {
+                console.log('Mock Sync Queue Add:', type, data);
+                return Promise.resolve(true);
+            },
+            getSyncQueue: () => Promise.resolve([]),
+            removeFromSyncQueue: (id) => Promise.resolve(true),
+            storeGet: (key) => {
+                const stored = localStorage.getItem(`kiosk-store-${key}`);
+                return Promise.resolve(stored ? JSON.parse(stored) : null);
+            },
+            storeSet: (key, value) => {
+                localStorage.setItem(`kiosk-store-${key}`, JSON.stringify(value));
+                return Promise.resolve(true);
+            },
+            getScreenInfo: () => Promise.resolve({
+                width: window.innerWidth,
+                height: window.innerHeight,
+                scaleFactor: window.devicePixelRatio || 1
+            }),
+            onAppClose: (callback) => {
+                window.addEventListener('beforeunload', callback);
+            },
+            onNetworkChange: (callback) => {
+                window.addEventListener('online', () => callback(true));
+                window.addEventListener('offline', () => callback(false));
+            }
+        };
+    }
+
+    // Expose global utilities
+    window.KioskUtils = {
+        hideLoadingScreen: hideLoadingScreen,
+        showErrorScreen: showErrorScreen,
+        isDev: isDev,
+        getDeviceInfo: function() {
+            return {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                cookieEnabled: navigator.cookieEnabled,
+                onLine: navigator.onLine,
+                hardwareConcurrency: navigator.hardwareConcurrency,
+                deviceMemory: navigator.deviceMemory,
+                connection: navigator.connection,
+                screen: {
+                    width: screen.width,
+                    height: screen.height,
+                    availWidth: screen.availWidth,
+                    availHeight: screen.availHeight,
+                    colorDepth: screen.colorDepth,
+                    pixelDepth: screen.pixelDepth
+                },
+                viewport: {
+                    width: window.innerWidth,
+                    height: window.innerHeight
+                }
+            };
+        }
+    };
+
+    // Initialize app loading timeout
+    setTimeout(function() {
+        if (document.getElementById('app-loading').style.display !== 'none') {
+            console.warn('App taking too long to load');
+            if (isDev) {
+                console.log('Check console for errors and ensure your backend at blup.test is running');
+            }
+        }
+    }, 10000); // 10 second timeout
+</script>
+
+<!-- Module Script (Vite will inject the main script here) -->
+<script type="module" src="/src/main.ts"></script>
+
+<!-- NoScript Fallback -->
+<noscript>
+    <div style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #f44336;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 2rem;
+      font-family: Arial, sans-serif;
+    ">
+        <h1 style="font-size: 2rem; margin-bottom: 1rem;">JavaScript Required</h1>
+        <p style="font-size: 1.1rem; margin-bottom: 2rem; max-width: 600px;">
+            This kiosk terminal application requires JavaScript to function.
+            Please enable JavaScript in your browser settings and refresh the page.
+        </p>
+        <p style="font-size: 1rem; opacity: 0.8;">
+            If you continue to experience issues, please contact technical support.
+        </p>
+    </div>
+</noscript>
+</body>
 </html>

@@ -3,3 +3,7 @@ node_modules/
 dist/
 .idea/
 data/
+package-lock.json
+.env
+dist-electron/
+dist-renderer/
